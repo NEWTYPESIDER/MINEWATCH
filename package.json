@@ -1,0 +1,29 @@
+{
+  "author": "NEWTYPESIDER",
+  "name": "minewatch",
+  "version": "0.0.1",
+  "description": "OVERWATCH's Everything Sucked Into MINECRAFT...?!",
+  "main": "MINEWATCH.js",
+  "scripts": {
+    "test": "console.log('Hello, World!');"
+  },
+  "keywords": [
+    "MINEWATCH"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NEWTYPESIDER/MINEWATCH.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NEWTYPESIDER/MINEWATCH/issues"
+  },
+  "homepage": "https://github.com/NEWTYPESIDER/MINEWATCH#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.1",
+    "gulp-eslint": "^4.0.2"
+  }
+}
