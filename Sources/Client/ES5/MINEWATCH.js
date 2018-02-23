@@ -129,7 +129,7 @@ console.log(androidVersion);
 
 /* ----------------------------------------------------------- */
 
-var UI = function () {
+/* var UI = function () {
     function UI() {
         _classCallCheck(this, UI);
     }
@@ -215,7 +215,7 @@ var UI = function () {
     }]);
 
     return UI;
-}();
+}(); */
 
 /* ----------------------------------------------------------- */
 
@@ -270,8 +270,8 @@ function InterpretData(data) {
     } else if (data.indexOf('Attack Player') !== -1) {
         data = data.split(': ');
 
-        if (data[1] === myInfo.id + '') {
-            health -= parseFloat(data[2]);
+        if(data[1] === myInfo.name) {
+            health -= data[2];
         }
     } else {
         try {
@@ -294,7 +294,7 @@ var IOClient = function () {
     console.log('Your Nickname: ' + nickname);
 
     new Thread(this.run = function () {
-    try {
+        try {
             var ip = '192.168.35.212';
             socket = new Socket(ip, 7000);
 
@@ -306,7 +306,7 @@ var IOClient = function () {
             output = new DataOutputStream(socket.getOutputStream());
 
             output.writeUTF(nickname);
-            output.wirteUTF('Spawn Player: ' + nickname);
+            output.writeUTF('Spawn Player: ' + nickname);
         } catch (error) {
             console.error(error, '\nERROR LINE >> ' + error.lineNumber);
         }
@@ -323,9 +323,9 @@ var IOClient = function () {
                 } catch (error) {}
             }
         });
-    }
+    };
 
-    
+
     this.recceiver = function receiver() {
         return new Thread(this.run = function () {
             try {
@@ -338,7 +338,7 @@ var IOClient = function () {
                 console.error(error, '\nERROR LINE >> ' + error.lineNumber);
             }
         });
-    }
+    };
 };
 
 /* ----------------------------------------------------------- */
@@ -367,10 +367,12 @@ function newLevel(hasLevel) {
 }
 
 function attackHook(attacker, victim) {
-    if (players.find(function (object) {
+    var player;
+
+    if (player = players.find(function (object) {
         return object.id + '' === victim + '';
     }) !== undefined) {
-        data = 'Attack Player: ' + victim + ': ' + damage;
+        data = 'Attack Player: ' + player.name + ': ' + damage;
     }
 }
 

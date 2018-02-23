@@ -254,8 +254,8 @@ function InterpretData(data) {
     } else if(data.indexOf('Attack Player') !== -1) {
         data = data.split(': ');
 
-        if(data[1] === myInfo.id + '') {
-            health -= parseFloat(data[2] );
+        if (data[1] === myInfo.name) {
+            health -= data[2];
         }
     } else {
         try {
@@ -291,7 +291,7 @@ class IOClient {
                     output = new DataOutputStream(socket.getOutputStream() );
             
                     output.writeUTF(nickname);
-                    output.wirteUTF('Spawn Player: ' + nickname);
+                    output.writeUTF('Spawn Player: ' + nickname);
                 } catch(error) {
                     console.error(error, `\nERROR LINE >> ${error.lineNumber}`);
                 }
@@ -358,8 +358,10 @@ function newLevel(hasLevel) {
 }
 
 function attackHook(attacker, victim) {
-    if(players.find(object => object.id + '' === victim + '') !== undefined) {
-        data = `Attack Player: ${victim}: ${damage}`;
+    let player;
+
+    if(player = players.find(object => object.id + '' === victim + '') !== undefined) {
+        data = `Attack Player: ${player.name}: ${damage}`;
     }
 }
 

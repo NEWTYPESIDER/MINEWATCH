@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 public class GamePlayServer {
     HashMap clients;
 
-    GamePlayServer(int number) {
+    GamePlayServer() {
         clients = new HashMap();
         Collections.synchronizedMap(clients);
 
@@ -18,7 +18,7 @@ public class GamePlayServer {
 
     public void start() {
         try {
-            Socket socket = new ServerSocket(Information.Port);
+            socket = new ServerSocket(Information.Port);
 
             System.out.println("Server Is Now Ready!");
             System.out.println("--------------------------------------------------");
@@ -56,7 +56,7 @@ public class GamePlayServer {
     }
 
     public static void main(String[] arguments) {
-        new IOServer().start();
+        new GamePlayServer().start();
     }
 
     class IOReceiver extends Thread {
