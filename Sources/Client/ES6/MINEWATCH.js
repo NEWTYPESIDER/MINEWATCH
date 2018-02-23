@@ -360,7 +360,7 @@ function newLevel(hasLevel) {
 function attackHook(attacker, victim) {
     let player;
 
-    if(player = players.find(object => object.id + '' === victim + '') !== undefined) {
+    if( (player = players.find(object => object.id + '' === victim + '') ) !== undefined) {
         data = `Attack Player: ${player.name}: ${damage}`;
     }
 }

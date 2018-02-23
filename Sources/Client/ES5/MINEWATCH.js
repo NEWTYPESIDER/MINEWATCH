@@ -129,93 +129,83 @@ console.log(androidVersion);
 
 /* ----------------------------------------------------------- */
 
-/* var UI = function () {
-    function UI() {
-        _classCallCheck(this, UI);
-    }
+var UI = function () {
+    this.profile = function profile(hero) {
+        try {
+            var bitmap = new Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+            var canvas = new Canvas(bitmap);
+            var paint = new Paint();
 
-    _createClass(UI, null, [{
-        key: 'profile',
-        value: function profile(hero) {
-            try {
-                var bitmap = new Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
-                var canvas = new Canvas(bitmap);
-                var paint = new Paint();
+            paint.setAntiAlias(true);
+            paint.setStrokeCap(Paint.Cap.ROUND);
+            paint.setStrokeWidth(10.0);
+            paint.setARGB(255, 255, 255, 255);
 
-                paint.setAntiAlias(true);
-                paint.setStrokeCap(Paint.Cap.ROUND);
-                paint.setStrokeWidth(10.0);
-                paint.setARGB(255, 255, 255, 255);
+            canvas.drawLine(10, 60, 10, 160, paint);
+            canvas.drawLine(210, 60, 210, 160, paint); // 일직선
 
-                canvas.drawLine(10, 60, 10, 160, paint);
-                canvas.drawLine(210, 60, 210, 160, paint); // 일직선
+            canvas.drawLine(10, 60, 110, 10, paint);
+            canvas.drawLine(210, 60, 110, 10, paint); // 위쪽 삼각형
 
-                canvas.drawLine(10, 60, 110, 10, paint);
-                canvas.drawLine(210, 60, 110, 10, paint); // 위쪽 삼각형
+            canvas.drawLine(10, 160, 110, 210, paint);
+            canvas.drawLine(210, 160, 110, 210, paint); // 아래쪽 삼각형
 
-                canvas.drawLine(10, 160, 110, 210, paint);
-                canvas.drawLine(210, 160, 110, 210, paint); // 아래쪽 삼각형
-
-                return bitmap;
-            } catch (error) {
-                console.error(error, '\nERROR LINE >> ' + error.lineNumber);
-            }
+            return bitmap;
+        } catch (error) {
+            console.error(error, '\nERROR LINE >> ' + error.lineNumber);
         }
-    }, {
-        key: 'healthBar',
-        value: function healthBar(constHealth, health) {
-            try {
-                var bitmap = new Bitmap.createBitmap(2000, 2000, Bitmap.Config.ARGB_8888);
-                var canvas = new Canvas(bitmap);
-                var paint = new Paint();
+    }
+    
+    this.healthBar = function healthBar(constHealth, health) {
+        try {
+            var bitmap = new Bitmap.createBitmap(2000, 2000, Bitmap.Config.ARGB_8888);
+            var canvas = new Canvas(bitmap);
+            var paint = new Paint();
 
-                paint.setAntiAlias(true);
-                paint.setStrokeCap(Paint.Cap.ROUND);
-                paint.setStyle(Paint.Style.FILL_AND_STROKE);
-                paint.setStrokeWidth(15.0);
+            paint.setAntiAlias(true);
+            paint.setStrokeCap(Paint.Cap.ROUND);
+            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+            paint.setStrokeWidth(15.0);
 
-                var constBoxNumber = Math.floor(constHealth / 25);
-                var boxNumber = Math.floor(health / 25);
-                var location = 15;
+            var constBoxNumber = Math.floor(constHealth / 25);
+            var boxNumber = Math.floor(health / 25);
+            var location = 15;
 
-                var boxScale = 1000 / constHealth;
+            var boxScale = 1000 / constHealth;
 
-                canvas.rotate(355);
-                canvas.skew(10, 0);
+            canvas.rotate(355);
+            canvas.skew(10, 0);
 
-                if (constHealth === 0) {
-                    paint.setARGB(150, 150, 150, 150);
+            if (constHealth === 0) {
+                paint.setARGB(150, 150, 150, 150);
 
-                    for (var n = 0; n < constBoxNumber; n++) {
-                        canvas.drawRoundRect(new RectF(location, 15, location += boxScale * 25, 515), 5, 5, paint);
-                        location += boxScale * 5;
-                        constHealth -= 25;
-                    }
-
-                    canvas.drawRect(new RectF(location, 15, location + boxScale * constHealth, 515), 5, 5, paint);
+                for (var n = 0; n < constBoxNumber; n++) {
+                    canvas.drawRoundRect(new RectF(location, 15, location += boxScale * 25, 515), 5, 5, paint);
+                    location += boxScale * 5;
+                    constHealth -= 25;
                 }
 
-                paint.setARGB(255, 255, 255, 255);
+                canvas.drawRect(new RectF(location, 15, location + boxScale * constHealth, 515), 5, 5, paint);
+            }
+
+            paint.setARGB(255, 255, 255, 255);
 
                 location = 15;
 
-                for (var _n = 0; _n < boxNumber; _n++) {
-                    canvas.drawRect(new RectF(location, 15, location += boxScale * 25, 515), 5, 5, paint);
-                    location += boxScale * 5;
-                    health -= 25;
-                }
-
-                canvas.drawRect(new RectF(location, 15, location + boxScale * health, 515), 5, 5, paint);
-
-                return bitmap;
-            } catch (error) {
-                console.error(error, '\nERROR LINE >> ' + error.lineNumber);
+            for (var _n = 0; _n < boxNumber; _n++) {
+                canvas.drawRect(new RectF(location, 15, location += boxScale * 25, 515), 5, 5, paint);
+                location += boxScale * 5;
+                health -= 25;
             }
-        }
-    }]);
 
-    return UI;
-}(); */
+            canvas.drawRect(new RectF(location, 15, location + boxScale * health, 515), 5, 5, paint);
+
+            return bitmap;
+        } catch (error) {
+            console.error(error, '\nERROR LINE >> ' + error.lineNumber);
+        }
+    }
+};
 
 /* ----------------------------------------------------------- */
 
@@ -270,7 +260,7 @@ function InterpretData(data) {
     } else if (data.indexOf('Attack Player') !== -1) {
         data = data.split(': ');
 
-        if(data[1] === myInfo.name) {
+        if (data[1] === myInfo.name) {
             health -= data[2];
         }
     } else {
@@ -311,7 +301,7 @@ var IOClient = function () {
             console.error(error, '\nERROR LINE >> ' + error.lineNumber);
         }
     }).start();
-
+    
     this.sender = function sender() {
         return new Thread(this.run = function () {
             while (output !== null) {
@@ -323,10 +313,9 @@ var IOClient = function () {
                 } catch (error) {}
             }
         });
-    };
-
-
-    this.recceiver = function receiver() {
+    }
+    
+    this.receiver = function receiver() {
         return new Thread(this.run = function () {
             try {
                 while (input !== null) {
@@ -338,7 +327,7 @@ var IOClient = function () {
                 console.error(error, '\nERROR LINE >> ' + error.lineNumber);
             }
         });
-    };
+    }
 };
 
 /* ----------------------------------------------------------- */
@@ -367,11 +356,11 @@ function newLevel(hasLevel) {
 }
 
 function attackHook(attacker, victim) {
-    var player;
+    var player = void 0;
 
-    if (player = players.find(function (object) {
+    if ((player = players.find(function (object) {
         return object.id + '' === victim + '';
-    }) !== undefined) {
+    })) !== undefined) {
         data = 'Attack Player: ' + player.name + ': ' + damage;
     }
 }
