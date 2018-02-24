@@ -213,6 +213,82 @@ const CHealth = 200;
 
 let damage = 100;
 
+let BHealth = CHealth;
+
+const windows = [];
+
+function makeProfile(hero) {
+    context.runOnUiThread(
+        new Runnable(
+            this.run = function() {
+                try {
+                    const window = (windows[0] = new PopupWindow() );
+                    const layout = new RelativeLayout(context);
+
+                    const picture = new Button(context);
+
+                    picture.setWidth(dipToPixel(100) );
+                    picture.setHeight(dipToPixel(100) );
+
+                    picture.setBackgroundDrawable(
+                        new BitmapDrawable(UI.profile(hero) )
+                    );
+
+                    layout.addView(picture);
+                    window.setContentView(layout);
+
+                    window.setWidth(dipToPixel(100) );
+                    window.setHeight(dipToPixel(100) );
+
+                    window.setBackgroundDrawable(
+                        new ColorDrawable(Color.TRANSPARENT)
+                    );
+
+                    winodw.showAtLocation(context.getWindow().getDecorView(), Gravity.LEFT | Gravity.TOP, 10, 10);
+                } catch(error) {
+                    console.error(error, '\nERROR LINE >> ' + error.lineNumber);
+                }
+            }
+        )
+    );
+}
+
+function makeHealthBar() {
+    context.runOnUiThread(
+        new Runnable(
+            this.run = function() {
+                try {
+                    const window = (windows[1] = new PopupWindow() );
+                    const layout = new RelativeLayout(context);
+
+                    const picture = new Button(context);
+
+                    picture.setWidth(dipToPixel(200) );
+                    picture.setHeight(dipToPixel(200) );
+
+                    picture.setBackgroundDrawable(
+                        new BitmapDrawable(UI.healthBar(CHealth, health) )
+                    );
+
+                    layout.addView(picture);
+                    window.setContentView(layout);
+
+                    window.setWidth(dipToPixel(100) );
+                    window.setHeight(dipToPixel(100) );
+
+                    window.setBackgroundDrawable(
+                        new ColorDrawable(Color.TRANSPARENT)
+                    );
+
+                    winodw.showAtLocation(context.getWindow().getDecorView(), Gravity.LEFT | Gravity.TOP, 10, 50);
+                } catch(error) {
+                    console.error(error, '\nERROR LINE >> ' + error.lineNumber);
+                }
+            }
+        )
+    );
+}
+
 function InterpretData(data) {
     if(data.indexOf('Spawn Player') !== -1) {
         data = data.split(': ');
@@ -355,6 +431,9 @@ function newLevel(hasLevel) {
             }
         }
     ).start();
+
+    makeProfile();
+    makeHealthBar();
 }
 
 function attackHook(attacker, victim) {
@@ -368,19 +447,20 @@ function attackHook(attacker, victim) {
 function leaveGame() {
     new Thread(
         this.run = function() {
-            sender.sender().interrupt();
-            receiver.interrupt();
-
             socket.close();
         }
     ).start();
+
+    windows[0].dismiss();
+    windows[1].dismiss();
 }
 
 function modTick() {
     if(health > 0) {
-        ModPE.showTipMessage(health);
-    } else {
-        ModPE.showTipMessage('유 다희양? 나와 주세요!');
+        if(BHealth !== health) {
+            makeHealthBar();
+            BHealth = health;
+        }
     }
 
     for(let index = 0; index < players.length; index++) {
