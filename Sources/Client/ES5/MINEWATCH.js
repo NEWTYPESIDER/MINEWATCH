@@ -1,5 +1,9 @@
 'use strict';
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 // [ PHILIPPIANS [ 4 [ 13] ] ]
 // I CAN DO ALL THIS THROUGH HIM HWO GIVES ME STRENGTH. AMEN!
 
@@ -130,82 +134,90 @@ console.log(androidVersion);
 /* ----------------------------------------------------------- */
 
 var UI = function () {
-    this.profile = function profile(hero) {
-        try {
-            var bitmap = new Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
-            var canvas = new Canvas(bitmap);
-            var paint = new Paint();
-
-            paint.setAntiAlias(true);
-            paint.setStrokeCap(Paint.Cap.ROUND);
-            paint.setStrokeWidth(10.0);
-            paint.setARGB(255, 255, 255, 255);
-
-            canvas.drawLine(10, 60, 10, 160, paint);
-            canvas.drawLine(210, 60, 210, 160, paint); // 일직선
-
-            canvas.drawLine(10, 60, 110, 10, paint);
-            canvas.drawLine(210, 60, 110, 10, paint); // 위쪽 삼각형
-
-            canvas.drawLine(10, 160, 110, 210, paint);
-            canvas.drawLine(210, 160, 110, 210, paint); // 아래쪽 삼각형
-
-            return bitmap;
-        } catch (error) {
-            console.error(error, '\nERROR LINE >> ' + error.lineNumber);
-        }
+    function UI() {
+        _classCallCheck(this, UI);
     }
-    
-    this.healthBar = function healthBar(constHealth, health) {
-        try {
-            var bitmap = new Bitmap.createBitmap(2000, 2000, Bitmap.Config.ARGB_8888);
-            var canvas = new Canvas(bitmap);
-            var paint = new Paint();
 
-            paint.setAntiAlias(true);
-            paint.setStrokeCap(Paint.Cap.ROUND);
-            paint.setStyle(Paint.Style.FILL_AND_STROKE);
-            paint.setStrokeWidth(15.0);
+    _createClass(UI, null, [{
+        key: 'profile',
+        value: function profile(hero) {
+            try {
+                var bitmap = new Bitmap.createBitmap(2000, 2000, Bitmap.Config.ARGB_8888);
+                var canvas = new Canvas(bitmap);
+                var paint = new Paint();
 
-            var constBoxNumber = Math.floor(constHealth / 25);
-            var boxNumber = Math.floor(health / 25);
-            var location = 15;
+                paint.setAntiAlias(true);
+                paint.setStrokeCap(Paint.Cap.ROUND);
+                paint.setStrokeWidth(10.0);
+                paint.setARGB(255, 255, 255, 255);
 
-            var boxScale = 1000 / constHealth;
+                canvas.drawLine(10, 60, 10, 160, paint);
+                canvas.drawLine(210, 60, 210, 160, paint); // 일직선
 
-            canvas.rotate(355);
-            canvas.skew(10, 0);
+                canvas.drawLine(10, 60, 110, 10, paint);
+                canvas.drawLine(210, 60, 110, 10, paint); // 위쪽 삼각형
 
-            if (constHealth === 0) {
+                canvas.drawLine(10, 160, 110, 210, paint);
+                canvas.drawLine(210, 160, 110, 210, paint); // 아래쪽 삼각형
+
+                return bitmap;
+            } catch (error) {
+                console.error(error, '\nERROR LINE >> ' + error.lineNumber);
+            }
+        }
+    }, {
+        key: 'healthBar',
+        value: function healthBar(constHealth, health) {
+            try {
+                var bitmap = new Bitmap.createBitmap(1500, 600, Bitmap.Config.ARGB_8888);
+                var canvas = new Canvas(bitmap);
+                var paint = new Paint();
+
+                paint.setAntiAlias(true);
+                paint.setStrokeCap(Paint.Cap.ROUND);
+                paint.setStyle(Paint.Style.FILL_AND_STROKE);
+                paint.setStrokeWidth(15.0);
+
+                var constBoxNumber = Math.floor(constHealth / 25);
+                var boxNumber = Math.floor(health / 25);
+                var location = 50;
+
+                var boxScale = 1000 / constHealth;
+
+                canvas.rotate(355);
+                canvas.skew(-0.15, 0);
+
                 paint.setARGB(150, 150, 150, 150);
 
                 for (var n = 0; n < constBoxNumber; n++) {
-                    canvas.drawRoundRect(new RectF(location, 15, location += boxScale * 25, 515), 5, 5, paint);
-                    location += boxScale * 5;
+                    canvas.drawRoundRect(new RectF(location, 15, location += boxScale * 25, 515), 7, 7, paint);
+                    location += boxScale * 7;
                     constHealth -= 25;
                 }
 
-                canvas.drawRect(new RectF(location, 15, location + boxScale * constHealth, 515), 5, 5, paint);
+                canvas.drawRect(new RectF(location, 15, location + boxScale * constHealth, 515), 7, 7, paint);
+
+                paint.setARGB(255, 255, 255, 255);
+
+                location = 50;
+
+                for (var _n = 0; _n < boxNumber; _n++) {
+                    canvas.drawRect(new RectF(location, 15, location += boxScale * 25, 515), 7, 7, paint);
+                    location += boxScale * 7;
+                    health -= 25;
+                }
+
+                canvas.drawRect(new RectF(location, 15, location + boxScale * health, 515), 7, 7, paint);
+
+                return bitmap;
+            } catch (error) {
+                console.error(error, '\nERROR LINE >> ' + error.lineNumber);
             }
-
-            paint.setARGB(255, 255, 255, 255);
-
-            location = 15;
-
-            for (var _n = 0; _n < boxNumber; _n++) {
-                canvas.drawRect(new RectF(location, 15, location += boxScale * 25, 515), 5, 5, paint);
-                location += boxScale * 5;
-                health -= 25;
-            }
-
-            canvas.drawRect(new RectF(location, 15, location + boxScale * health, 515), 5, 5, paint);
-
-            return bitmap;
-        } catch (error) {
-            console.error(error, '\nERROR LINE >> ' + error.lineNumber);
         }
-    }
-};
+    }]);
+
+    return UI;
+}();
 
 /* ----------------------------------------------------------- */
 
@@ -222,66 +234,68 @@ var BHealth = CHealth;
 var windows = [];
 
 function makeProfile(hero) {
-context.runOnUiThread(new Runnable(this.run = function () {
-    try {
-        var window = windows[0] = new PopupWindow();
-        var layout = new RelativeLayout(context);
+    context.runOnUiThread(new Runnable(this.run = function () {
+        try {
+            windows[0] = new PopupWindow();
+            var layout = new RelativeLayout(context);
 
-        var picture = new Button(context);
+            var picture = new Button(context);
 
-        picture.setWidth(dipToPixel(100));
-        picture.setHeight(dipToPixel(100));
+            picture.setWidth(dipToPixel(100));
+            picture.setHeight(dipToPixel(100));
 
-        picture.setBackgroundDrawable(new BitmapDrawable(UI.profile(hero)));
+            picture.setBackgroundDrawable(new BitmapDrawable(UI.profile(hero)));
 
-        layout.addView(picture);
-        window.setContentView(layout);
+            layout.addView(picture);
+            window.setContentView(layout);
 
-        window.setWidth(dipToPixel(100));
-        window.setHeight(dipToPixel(100));
+            windows[0].setWidth(dipToPixel(100));
+            windows[0].setHeight(dipToPixel(100));
 
-        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            windows[0].setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        winodw.showAtLocation(context.getWindow().getDecorView(), Gravity.LEFT | Gravity.TOP, 10, 10);
-    } catch (error) {
-        console.error(error, '\nERROR LINE >> ' + error.lineNumber);
-    }
-}));
+            windows[0].showAtLocation(context.getWindow().getDecorView(), Gravity.LEFT | Gravity.TOP, 10, 10);
+        } catch (error) {
+            console.error(error, '\nERROR LINE >> ' + error.lineNumber);
+        }
+    }));
 }
 
 function makeHealthBar() {
-context.runOnUiThread(new Runnable(this.run = function () {
-    try {
-        var window = windows[1] = new PopupWindow();
-        var layout = new RelativeLayout(context);
+    context.runOnUiThread(new Runnable(this.run = function () {
+        try {
+            windows[1] = new PopupWindow();
+            var layout = new RelativeLayout(context);
 
-        var picture = new Button(context);
+            var picture = new Button(context);
 
-        picture.setWidth(dipToPixel(200));
-        picture.setHeight(dipToPixel(200));
+            picture.setWidth(dipToPixel(240));
+            picture.setHeight(dipToPixel(15));
 
-        picture.setBackgroundDrawable(new BitmapDrawable(UI.healthBar(CHealth, health)));
+            picture.setBackgroundDrawable(new BitmapDrawable(ui.healthBar(CHealth, health)));
 
-        layout.addView(picture);
-        window.setContentView(layout);
+            layout.addView(picture);
+            windows[1].setContentView(layout);
 
-        window.setWidth(dipToPixel(100));
-        window.setHeight(dipToPixel(100));
+            windows[1].setWidth(dipToPixel(240));
+            windows[1].setHeight(dipToPixel(15));
 
-        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            windows[1].setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        winodw.showAtLocation(context.getWindow().getDecorView(), Gravity.LEFT | Gravity.TOP, 10, 50);
-    } catch (error) {
-        console.error(error, '\nERROR LINE >> ' + error.lineNumber);
-    }
-}));
+            windows[1].setTouchable(false);
+
+            windows[1].showAtLocation(context.getWindow().getDecorView(), Gravity.LEFT | Gravity.TOP, 100, 200);
+        } catch (error) {
+            console.error(error, '\nERROR LINE >> ' + error.lineNumber);
+        }
+    }));
 }
 
 function InterpretData(data) {
     if (data.indexOf('Spawn Player') !== -1) {
         data = data.split(': ');
 
-        myInfo === null ? myInfo = {
+        myInfo === null ? {
             id: Level.spawnMob(0, 5, 0, EntityType.VILLAGER),
             name: data[1],
 
