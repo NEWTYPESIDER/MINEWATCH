@@ -332,9 +332,23 @@ let murder = null;
 function InterpretData(data) {
     if(data.indexOf('Spawn Player') !== -1) {
         data = data.split(': ');
+
+        let info;
         
         if(myInfo === null)
-            myInfo = {
+            info = (myInfo = {
+                id: Level.spawnMob(0, 5, 0, EntityType.VILLAGER),
+                name: data[1],
+
+                x: 0,
+                y: 5,
+                z: 0,
+
+                yaw: 0,
+                pitch: 0
+            } );
+        else
+            info = {
                 id: Level.spawnMob(0, 5, 0, EntityType.VILLAGER),
                 name: data[1],
 
@@ -348,7 +362,7 @@ function InterpretData(data) {
         
         Entity.remove(myInfo.id);
 
-        players.push(myInfo);
+        players.push(info);
 
         return true;
     } else if(data.indexOf('Move Player') !== -1) {
@@ -520,19 +534,22 @@ function modTick() {
         Entity.setVelZ(players[index].id, players[index].z - Entity.getZ(players[index].id) );
     }
     
+    if(health <= 0) {
+        if(cooltime === 0)
+            cooltime = 5 * 20;
+    }
+    
     if(cooltime === 0) {
-        murder = null;
         data = `Move Player: ${nickname}: ${Player.getX() }: ${Player.getY() }: ${Player.getZ() }: ${Entity.getYaw(Player.getEntity() ) }: ${Entity.getPitch(Player.getEntity() ) }`;
 
-        if(health === 0) health = CHealth;
+        if(health === 1)
+            health = CHealth;
+
+        murder = null;
     } else {
         --cooltime;
         if(murder !== null) {
             followRow(murder.x, murder.y, murder.z);
         }
-    }
-
-    if(health <= 0) {
-        cooltime = 5 * 20;
     }
 }
