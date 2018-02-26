@@ -210,7 +210,7 @@ var UI = function () {
 /* ----------------------------------------------------------- */
 
 var players = [];
-var myInfo = void 0;
+var myInfo = null;
 
 var health = 200;
 var CHealth = 200;
@@ -281,7 +281,7 @@ function InterpretData(data) {
     if (data.indexOf('Spawn Player') !== -1) {
         data = data.split(': ');
 
-        myInfo = {
+        myInfo === null ? myInfo = {
             id: Level.spawnMob(0, 5, 0, EntityType.VILLAGER),
             name: data[1],
 
@@ -291,7 +291,7 @@ function InterpretData(data) {
 
             yaw: 0,
             pitch: 0
-        };
+        } : null;
 
         players.push(myInfo);
 

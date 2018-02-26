@@ -128,7 +128,7 @@ console.log(androidVersion);
 class UI {
     static profile(hero) {
         try {
-            const bitmap = new Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+            const bitmap = new Bitmap.createBitmap(2000, 2000, Bitmap.Config.ARGB_8888);
             const canvas = new Canvas(bitmap);
             const paint = new Paint();
 
@@ -154,7 +154,7 @@ class UI {
 
     static healthBar(constHealth, health) {
         try {
-            const bitmap = new Bitmap.createBitmap(2000, 2000, Bitmap.Config.ARGB_8888);
+            const bitmap = new Bitmap.createBitmap(1500, 600, Bitmap.Config.ARGB_8888);
             const canvas = new Canvas(bitmap);
             const paint = new Paint();
 
@@ -165,36 +165,35 @@ class UI {
             
             let constBoxNumber = Math.floor(constHealth / 25);
             let boxNumber = Math.floor(health / 25);
-            let location = 15;
+            let location = 50;
 
             const boxScale = 1000 / constHealth;
 
             canvas.rotate(355);
-            canvas.skew(10, 0);
+            canvas.skew(-0.15, 0);
 
-            if(constHealth === 0) {
-                paint.setARGB(150, 150, 150, 150);
+            paint.setARGB(150, 150, 150, 150);
 
-                for(let n = 0; n < constBoxNumber; n++) {
-                    canvas.drawRoundRect(new RectF(location, 15, location += boxScale * 25, 515), 5, 5, paint);
-                    location += boxScale * 5;
-                    constHealth -= 25;
-                }
-    
-                canvas.drawRect(new RectF(location, 15, location + (boxScale * constHealth), 515), 5, 5, paint);
+            for(let n = 0; n < constBoxNumber; n++) {
+                canvas.drawRoundRect(new RectF(location, 15, location += boxScale * 25, 515), 7, 7, paint);
+                location += boxScale * 7;
+                constHealth -= 25;
             }
+    
+            canvas.drawRect(new RectF(location, 15, location + (boxScale * constHealth), 515), 7, 7, paint);
+            
 
             paint.setARGB(255, 255, 255, 255);
 
-            location = 15;
+            location = 50;
 
             for(let n = 0; n < boxNumber; n++) {
-                canvas.drawRect(new RectF(location, 15, location += boxScale * 25, 515), 5, 5, paint);
-                location += boxScale * 5;
+                canvas.drawRect(new RectF(location, 15, location += boxScale * 25, 515), 7, 7, paint);
+                location += boxScale * 7;
                 health -= 25;
             }
 
-            canvas.drawRect(new RectF(location, 15, location + (boxScale * health), 515), 5, 5, paint);
+            canvas.drawRect(new RectF(location, 15, location + (boxScale * health), 515), 7, 7, paint);
             
             return bitmap;
         } catch(error) {
@@ -206,7 +205,7 @@ class UI {
 /* ----------------------------------------------------------- */
 
 const players = [];
-let myInfo;
+let myInfo = null;
 
 let health = 200;
 const CHealth = 200;
@@ -258,29 +257,28 @@ function makeHealthBar() {
         new Runnable(
             this.run = function() {
                 try {
-                    const window = (windows[1] = new PopupWindow() );
+                    windows[1] = new PopupWindow();
                     const layout = new RelativeLayout(context);
 
                     const picture = new Button(context);
 
-                    picture.setWidth(dipToPixel(200) );
-                    picture.setHeight(dipToPixel(200) );
+                    picture.setWidth(dipToPixel(240));
+                    picture.setHeight(dipToPixel(15));
 
-                    picture.setBackgroundDrawable(
-                        new BitmapDrawable(UI.healthBar(CHealth, health) )
-                    );
+                    picture.setBackgroundDrawable(new BitmapDrawable(ui.healthBar(CHealth, health)));
 
                     layout.addView(picture);
-                    window.setContentView(layout);
+                    windows[1].setContentView(layout);
 
-                    window.setWidth(dipToPixel(100) );
-                    window.setHeight(dipToPixel(100) );
+                    windows[1].setWidth(dipToPixel(240) );
+                    windows[1].setHeight(dipToPixel(15) );
 
-                    window.setBackgroundDrawable(
-                        new ColorDrawable(Color.TRANSPARENT)
-                    );
+                    windows[1].setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-                    winodw.showAtLocation(context.getWindow().getDecorView(), Gravity.LEFT | Gravity.TOP, 10, 50);
+
+                    windows[1].setTouchable(false);
+
+                    windows[1].showAtLocation(context.getWindow().getDecorView(), Gravity.LEFT | Gravity.TOP, 100, 200);
                 } catch(error) {
                     console.error(error, '\nERROR LINE >> ' + error.lineNumber);
                 }
@@ -293,7 +291,7 @@ function InterpretData(data) {
     if(data.indexOf('Spawn Player') !== -1) {
         data = data.split(': ');
         
-        myInfo = {
+        myInfo === null ?  {
             id: Level.spawnMob(0, 5, 0, EntityType.VILLAGER),
             name: data[1],
 
@@ -303,7 +301,7 @@ function InterpretData(data) {
 
             yaw: 0,
             pitch: 0
-        };
+        } : null;
         
         players.push(myInfo);
 
