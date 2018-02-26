@@ -154,7 +154,7 @@ class UI {
 
     static healthBar(constHealth, health) {
         try {
-            const bitmap = new Bitmap.createBitmap(1500, 600, Bitmap.Config.ARGB_8888);
+            const bitmap = new Bitmap.createBitmap(2000, 600, Bitmap.Config.ARGB_8888);
             const canvas = new Canvas(bitmap);
             const paint = new Paint();
 
@@ -180,7 +180,7 @@ class UI {
                 constHealth -= 25;
             }
     
-            canvas.drawRect(new RectF(location, 15, location + (boxScale * constHealth), 515), 7, 7, paint);
+            canvas.drawRoundRect(new RectF(location, 15, location + (boxScale * constHealth), 515), 7, 7, paint);
             
 
             paint.setARGB(255, 255, 255, 255);
@@ -188,12 +188,12 @@ class UI {
             location = 50;
 
             for(let n = 0; n < boxNumber; n++) {
-                canvas.drawRect(new RectF(location, 15, location += boxScale * 25, 515), 7, 7, paint);
+                canvas.drawRoundRect(new RectF(location, 15, location += boxScale * 25, 515), 7, 7, paint);
                 location += boxScale * 7;
                 health -= 25;
             }
 
-            canvas.drawRect(new RectF(location, 15, location + (boxScale * health), 515), 7, 7, paint);
+            canvas.drawRoundRect(new RectF(location, 15, location + (boxScale * health), 515), 7, 7, paint);
             
             return bitmap;
         } catch(error) {
@@ -204,6 +204,47 @@ class UI {
 
 /* ----------------------------------------------------------- */
 
+function followRow(x, y, z) {
+    x += 0.5;
+    y += 0.5;
+    z += 0.5;
+    
+    var a = Player.getX();
+    var b = Player.getY();
+    var c = Player.getZ();
+    
+    x = x-a;
+    y = y-b;
+    z = z-c;
+    var l = Math.sqrt(Math.pow(x, 2) + Math.pow(z, 2) );
+    
+    var sinHorizontal = x / l;
+    var cosHorizontal = z / l;
+    var tanHorizontal = x / z;
+    var acosHorizontal = Math.acos(z/l) * 180 / Math.PI;
+    
+    var atanVertical = Math.atan(y / l);
+    
+    var alpha = 0;
+    
+    if(sinHorizontal > 0 && cosHorizontal > 0 && tanHorizontal > 0) alpha = 360 - acosHorizontal;
+    else if(sinHorizontal > 0 && cosHorizontal < 0 && tanHorizontal < 0) alpha = 360 - acosHorizontal;
+    else if(sinHorizontal < 0 && cosHorizontal < 0 && tanHorizontal > 0) alpha = acosHorizontal;
+    else if(sinHorizontal < 0 && cosHorizontal > 0 && tanHorizontal < 0) alpha = acosHorizontal;
+    else if(cosHorizontal == 1) alpha = 0;
+    else if(sinHorizontal == 1) alpha = 90;
+    else if(cosHorizontal == -1) alpha = 180;
+    else if(sinHorizontal == -1) alpha = 270;
+    else if(sinHorizontal == 0 && cosHorizontal == 1 && tanHorizontal == 0) null;
+    
+    var beta = atanVertical;
+    beta = -1 * beta * 180 / Math.PI;
+    
+    Entity.setRot(Player.getEntity(), alpha, beta);
+}
+    
+    
+
 const players = [];
 let myInfo = null;
 
@@ -212,8 +253,6 @@ const CHealth = 200;
 
 let damage = 100;
 
-let BHealth = CHealth;
-
 const windows = [];
 
 function makeProfile(hero) {
@@ -221,7 +260,7 @@ function makeProfile(hero) {
         new Runnable(
             this.run = function() {
                 try {
-                    const window = (windows[0] = new PopupWindow() );
+                    windows[0] = new PopupWindow();
                     const layout = new RelativeLayout(context);
 
                     const picture = new Button(context);
@@ -234,16 +273,16 @@ function makeProfile(hero) {
                     );
 
                     layout.addView(picture);
-                    window.setContentView(layout);
+                    windows[0].setContentView(layout);
 
-                    window.setWidth(dipToPixel(100) );
-                    window.setHeight(dipToPixel(100) );
+                    windows[0].setWidth(dipToPixel(100) );
+                    windows[0].setHeight(dipToPixel(100) );
 
-                    window.setBackgroundDrawable(
+                    windows[0].setBackgroundDrawable(
                         new ColorDrawable(Color.TRANSPARENT)
                     );
 
-                    winodw.showAtLocation(context.getWindow().getDecorView(), Gravity.LEFT | Gravity.TOP, 10, 10);
+                    winodws[0].showAtLocation(context.getWindow().getDecorView(), Gravity.LEFT | Gravity.TOP, 10, 10);
                 } catch(error) {
                     console.error(error, '\nERROR LINE >> ' + error.lineNumber);
                 }
@@ -271,7 +310,7 @@ function makeHealthBar() {
                     windows[1].setContentView(layout);
 
                     windows[1].setWidth(dipToPixel(240) );
-                    windows[1].setHeight(dipToPixel(15) );
+                    windows[1].setHeight(dipToPixel(240) );
 
                     windows[1].setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
@@ -287,22 +326,28 @@ function makeHealthBar() {
     );
 }
 
+let cooltime = 0;
+let murder = null;
+
 function InterpretData(data) {
     if(data.indexOf('Spawn Player') !== -1) {
         data = data.split(': ');
         
-        myInfo === null ?  {
-            id: Level.spawnMob(0, 5, 0, EntityType.VILLAGER),
-            name: data[1],
+        if(myInfo === null)
+            myInfo = {
+                id: Level.spawnMob(0, 5, 0, EntityType.VILLAGER),
+                name: data[1],
 
-            x: 0,
-            y: 5,
-            z: 0,
+                x: 0,
+                y: 5,
+                z: 0,
 
-            yaw: 0,
-            pitch: 0
-        } : null;
+                yaw: 0,
+                pitch: 0
+            };
         
+        Entity.remove(myInfo.id);
+
         players.push(myInfo);
 
         return true;
@@ -329,7 +374,14 @@ function InterpretData(data) {
         data = data.split(': ');
 
         if (data[1] === myInfo.name) {
-            health -= data[2];
+            if(health >= 0) {
+                health -= data[2];
+                makeHealthBar();   
+            } else {
+                murder = players.find(obj => obj.name === data[1] );
+                
+                console.log(murder.name);
+            }
         }
     } else {
         try {
@@ -408,13 +460,14 @@ class IOClient {
 /* ----------------------------------------------------------- */
 
 let client;
-let sender, receiver;
 
 function newLevel(hasLevel) {
+    Level.executeCommand('/kill @e', true);
+
     client = new IOClient();
 
-    sender = client.sender().start();
-    receiver = client.receiver().start();
+    client.sender().start();
+    client.receiver().start();
 
     new Thread(
         this.run = function() {
@@ -438,7 +491,8 @@ function attackHook(attacker, victim) {
     let player;
 
     if( (player = players.find(object => object.id + '' === victim + '') ) !== undefined) {
-        data = `Attack Player: ${player.name}: ${damage}`;
+        if(cooltime === 0)
+            data = `Attack Player: ${player.name}: ${damage}`;
     }
 }
 
@@ -449,23 +503,36 @@ function leaveGame() {
         }
     ).start();
 
-    windows[0].dismiss();
-    windows[1].dismiss();
+    context.runOnUiThread(
+        new Runnable(
+            this.run = function() {
+                windows[0].dismiss();
+                windows[1].dismiss();   
+            }
+        )
+    );
 }
 
 function modTick() {
-    if(health > 0) {
-        if(BHealth !== health) {
-            makeHealthBar();
-            BHealth = health;
-        }
-    }
-
     for(let index = 0; index < players.length; index++) {
         Entity.setVelX(players[index].id, players[index].x - Entity.getX(players[index].id) );
         Entity.setVelY(players[index].id, (players[index].y - 2) - Entity.getY(players[index].id) );
         Entity.setVelZ(players[index].id, players[index].z - Entity.getZ(players[index].id) );
     }
     
-    data = `Move Player: ${nickname}: ${Player.getX() }: ${Player.getY() }: ${Player.getZ() }: ${Entity.getYaw(Player.getEntity() ) }: ${Entity.getPitch(Player.getEntity() ) }`;
+    if(cooltime === 0) {
+        murder = null;
+        data = `Move Player: ${nickname}: ${Player.getX() }: ${Player.getY() }: ${Player.getZ() }: ${Entity.getYaw(Player.getEntity() ) }: ${Entity.getPitch(Player.getEntity() ) }`;
+
+        if(health === 0) health = CHealth;
+    } else {
+        --cooltime;
+        if(murder !== null) {
+            followRow(murder.x, murder.y, murder.z);
+        }
+    }
+
+    if(health <= 0) {
+        cooltime = 5 * 20;
+    }
 }
