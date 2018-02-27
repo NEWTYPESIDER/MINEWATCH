@@ -290,20 +290,22 @@ function makeProfile(hero) {
     }));
 }
 
+var healthBar = void 0;
+
 function makeHealthBar() {
     context.runOnUiThread(new Runnable(this.run = function () {
         try {
             windows[1] = new PopupWindow();
             var layout = new RelativeLayout(context);
 
-            var picture = new Button(context);
+            healthBar = new Button(context);
 
-            picture.setWidth(dipToPixel(240));
-            picture.setHeight(dipToPixel(15));
+            healthBar.setWidth(dipToPixel(240));
+            healthBar.setHeight(dipToPixel(15));
 
-            picture.setBackgroundDrawable(new BitmapDrawable(ui.healthBar(CHealth, health)));
+            healthBar.setBackgroundDrawable(new BitmapDrawable(ui.healthBar(CHealth, health)));
 
-            layout.addView(picture);
+            layout.addView(healthBar);
             windows[1].setContentView(layout);
 
             windows[1].setWidth(dipToPixel(240));
@@ -314,6 +316,16 @@ function makeHealthBar() {
             windows[1].setTouchable(false);
 
             windows[1].showAtLocation(context.getWindow().getDecorView(), Gravity.LEFT | Gravity.TOP, 100, 200);
+        } catch (error) {
+            console.error(error, '\nERROR LINE >> ' + error.lineNumber);
+        }
+    }));
+}
+
+function drawHealthBar() {
+    context.runOnUiThread(new Runnable(this.run = function () {
+        try {
+            healthBar.setBackgroundDrawable(new BitmapDrawable(UI.healthBar(CHealth, health)));
         } catch (error) {
             console.error(error, '\nERROR LINE >> ' + error.lineNumber);
         }
@@ -383,7 +395,7 @@ function InterpretData(data) {
         if (data[1] === myInfo.name) {
             if (health >= 0) {
                 health -= data[2];
-                makeHealthBar();
+                drawHealthBar();
             } else {
                 murder = players.find(function (obj) {
                     return obj.name === data[1];
@@ -473,11 +485,11 @@ function newLevel(hasLevel) {
 
     new Thread(this.run = function () {
         while (true) {
-            for (var index = 0; index < players.length; index++) {
+            for (var _index = 0; _index < players.length; _index++) {
                 try {
                     Thread.sleep(5);
 
-                    Entity.setRot(players[index].id, players[index].yaw, players[index].pitch);
+                    Entity.setRot(players[_index].id, players[_index].yaw, players[_index].pitch);
                 } catch (error) {}
             }
         }
@@ -509,10 +521,10 @@ function leaveGame() {
 }
 
 function modTick() {
-    for (var index = 0; index < players.length; index++) {
-        Entity.setVelX(players[index].id, players[index].x - Entity.getX(players[index].id));
-        Entity.setVelY(players[index].id, players[index].y - 2 - Entity.getY(players[index].id));
-        Entity.setVelZ(players[index].id, players[index].z - Entity.getZ(players[index].id));
+    for (var _index2 = 0; _index2 < players.length; _index2++) {
+        Entity.setVelX(players[_index2].id, players[_index2].x - Entity.getX(players[_index2].id));
+        Entity.setVelY(players[_index2].id, players[_index2].y - 1.5 - Entity.getY(players[_index2].id));
+        Entity.setVelZ(players[_index2].id, players[_index2].z - Entity.getZ(players[_index2].id));
     }
 
     if (health <= 0) {
@@ -522,11 +534,19 @@ function modTick() {
     if (cooltime === 0) {
         data = 'Move Player: ' + nickname + ': ' + Player.getX() + ': ' + Player.getY() + ': ' + Player.getZ() + ': ' + Entity.getYaw(Player.getEntity()) + ': ' + Entity.getPitch(Player.getEntity());
 
-        if (health === 1) health = CHealth;
+        if (health === 1) {
+            health = CHealth;
+            drawHealthBar();
 
-        murder = null;
+            murder = null;
+        }
     } else {
         --cooltime;
+
+        Entity.setVelX(Player.getEntity(), players[index].x - Entity.getX(Player.getEntity()));
+        Entity.setVelY(Player.getEntity(), players[index].y - 1.5 - Entity.getY(Player.getEntity()));
+        Entity.setVelZ(Player.getEntity(), players[index].z - Entity.getZ(Player.getEntity()));
+
         if (murder !== null) {
             followRow(murder.x, murder.y, murder.z);
         }

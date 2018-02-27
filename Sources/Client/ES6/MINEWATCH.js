@@ -213,15 +213,15 @@ function followRow(x, y, z) {
     var b = Player.getY();
     var c = Player.getZ();
     
-    x = x-a;
-    y = y-b;
-    z = z-c;
+    x = x - a;
+    y = y - b;
+    z = z- c;
     var l = Math.sqrt(Math.pow(x, 2) + Math.pow(z, 2) );
     
     var sinHorizontal = x / l;
     var cosHorizontal = z / l;
     var tanHorizontal = x / z;
-    var acosHorizontal = Math.acos(z/l) * 180 / Math.PI;
+    var acosHorizontal = Math.acos(z / l) * 180 / Math.PI;
     
     var atanVertical = Math.atan(y / l);
     
@@ -291,6 +291,8 @@ function makeProfile(hero) {
     );
 }
 
+let healthBar;
+
 function makeHealthBar() {
     context.runOnUiThread(
         new Runnable(
@@ -299,25 +301,39 @@ function makeHealthBar() {
                     windows[1] = new PopupWindow();
                     const layout = new RelativeLayout(context);
 
-                    const picture = new Button(context);
+                    healthBar = new Button(context);
 
-                    picture.setWidth(dipToPixel(240));
-                    picture.setHeight(dipToPixel(15));
+                    healthBar.setWidth(dipToPixel(240));
+                    healthBar.setHeight(dipToPixel(15));
 
-                    picture.setBackgroundDrawable(new BitmapDrawable(ui.healthBar(CHealth, health)));
+                    healthBar.setBackgroundDrawable(new BitmapDrawable(ui.healthBar(CHealth, health) ) );
 
-                    layout.addView(picture);
+                    layout.addView(healthBar);
                     windows[1].setContentView(layout);
 
                     windows[1].setWidth(dipToPixel(240) );
                     windows[1].setHeight(dipToPixel(240) );
 
-                    windows[1].setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    windows[1].setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT) );
 
 
                     windows[1].setTouchable(false);
 
                     windows[1].showAtLocation(context.getWindow().getDecorView(), Gravity.LEFT | Gravity.TOP, 100, 200);
+                } catch(error) {
+                    console.error(error, '\nERROR LINE >> ' + error.lineNumber);
+                }
+            }
+        )
+    );
+}
+
+function drawHealthBar() {
+    context.runOnUiThread(
+        new Runnable(
+            this.run = function() {
+                try {
+                    healthBar.setBackgroundDrawable(new BitmapDrawable(UI.healthBar(CHealth, health) ) );
                 } catch(error) {
                     console.error(error, '\nERROR LINE >> ' + error.lineNumber);
                 }
@@ -390,7 +406,7 @@ function InterpretData(data) {
         if (data[1] === myInfo.name) {
             if(health >= 0) {
                 health -= data[2];
-                makeHealthBar();   
+                drawHealthBar();   
             } else {
                 murder = players.find(obj => obj.name === data[1] );
                 
@@ -530,7 +546,7 @@ function leaveGame() {
 function modTick() {
     for(let index = 0; index < players.length; index++) {
         Entity.setVelX(players[index].id, players[index].x - Entity.getX(players[index].id) );
-        Entity.setVelY(players[index].id, (players[index].y - 2) - Entity.getY(players[index].id) );
+        Entity.setVelY(players[index].id, (players[index].y - 1.5) - Entity.getY(players[index].id) );
         Entity.setVelZ(players[index].id, players[index].z - Entity.getZ(players[index].id) );
     }
     
@@ -542,12 +558,19 @@ function modTick() {
     if(cooltime === 0) {
         data = `Move Player: ${nickname}: ${Player.getX() }: ${Player.getY() }: ${Player.getZ() }: ${Entity.getYaw(Player.getEntity() ) }: ${Entity.getPitch(Player.getEntity() ) }`;
 
-        if(health === 1)
+        if(health === 1) {
             health = CHealth;
+            drawHealthBar();
 
-        murder = null;
+            murder = null;
+        }
     } else {
         --cooltime;
+        
+        Entity.setVelX(Player.getEntity(), players[index].x - Entity.getX(Player.getEntity() ) );
+        Entity.setVelY(Player.getEntity(), (players[index].y - 1.5) - Entity.getY(Player.getEntity() ) );
+        Entity.setVelZ(Player.getEntity(), players[index].z - Entity.getZ(Player.getEntity() ) );
+        
         if(murder !== null) {
             followRow(murder.x, murder.y, murder.z);
         }
